@@ -1,0 +1,6 @@
+<resources>
+    <string name="app_name">NotesApp</string>
+    <string name="new_note">New note</string>
+    <string name="editText"></string>
+    <string name="textview">TextView</string>
+</resources>
