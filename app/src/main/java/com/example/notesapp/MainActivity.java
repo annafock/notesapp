@@ -6,15 +6,16 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
-import android.widget.TextView;
 
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class MainActivity extends AppCompatActivity {
     private RecyclerView mRecyclerView;
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
-    String[] notes = {"hej hej", "en anteckning", "jajamen", "hej hej", "en anteckning", "jajamen"};
+    List<String> notes;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,6 +31,8 @@ public class MainActivity extends AppCompatActivity {
         mLayoutManager = new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(mLayoutManager);
 
+        notes = new ArrayList<>();
+        notes.add("hej");
         // specify an adapter (see also next example)
         mAdapter = new MyAdapter(notes);
         mRecyclerView.setAdapter(mAdapter);
@@ -37,7 +40,8 @@ public class MainActivity extends AppCompatActivity {
 
         // Get the Intent that started this activity and extract the string
         Intent intent = getIntent();
-        String message = intent.getStringExtra(OpenNoteActivity.EXTRA_MESSAGE);
+        notes = getIntent().getStringArrayListExtra("data");
+        //String message = intent.getStringExtra(OpenNoteActivity.EXTRA_MESSAGE);
 
 
     }
