@@ -12,7 +12,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class OpenNoteActivity extends AppCompatActivity {
-    private List<String> data;
     public static final String EXTRA_MESSAGE = "com.exanmple.notesapp.MESSAGE";
 
     @Override
@@ -26,8 +25,6 @@ public class OpenNoteActivity extends AppCompatActivity {
         //editText.setText(input, TextView.BufferType.EDITABLE);
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
-        data = new ArrayList<String>();
 
     }
 
@@ -51,21 +48,14 @@ public class OpenNoteActivity extends AppCompatActivity {
 
     //More work on making the text edit be saved to the list
     public void saveText(){
+
         Intent intent = new Intent(this, MainActivity.class);
-        intent.putStringArrayListExtra("data", (ArrayList<String>) data);
+        EditText editText = (EditText) findViewById(R.id.editText);
+        String message = editText.getText().toString();
 
-
-
-
-
-
-//        Intent intent = new Intent(this, MainActivity.class);
-//        EditText editText = (EditText) findViewById(R.id.editText);
-//        String message = editText.getText().toString();
-//
-//        intent.putExtra(EXTRA_MESSAGE, message);
-//        startActivity(intent);
-//        System.out.println("Sparar!");
+        intent.putExtra(EXTRA_MESSAGE, message);
+        startActivity(intent);
+        System.out.println("Sparar!");
     }
 
 }

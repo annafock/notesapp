@@ -40,8 +40,9 @@ public class MainActivity extends AppCompatActivity {
 
         // Get the Intent that started this activity and extract the string
         Intent intent = getIntent();
-        notes = getIntent().getStringArrayListExtra("data");
-        //String message = intent.getStringExtra(OpenNoteActivity.EXTRA_MESSAGE);
+
+        String message = intent.getStringExtra(OpenNoteActivity.EXTRA_MESSAGE);
+        notes.add(message);
 
 
     }
