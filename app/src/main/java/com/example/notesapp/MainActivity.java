@@ -15,7 +15,7 @@ public class MainActivity extends AppCompatActivity {
     private RecyclerView mRecyclerView;
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
-    List<String> notes;
+    List<Note> notes;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,17 +32,17 @@ public class MainActivity extends AppCompatActivity {
         mRecyclerView.setLayoutManager(mLayoutManager);
 
         notes = new ArrayList<>();
-        notes.add("hej");
+        notes.add(new Note("hej", "nice to see you"));
         // specify an adapter (see also next example)
         mAdapter = new MyAdapter(notes);
         mRecyclerView.setAdapter(mAdapter);
 
 
-        // Get the Intent that started this activity and extract the string
-        Intent intent = getIntent();
-
-        String message = intent.getStringExtra(OpenNoteActivity.EXTRA_MESSAGE);
-        notes.add(message);
+//        // Get the Intent that started this activity and extract the string
+//        Intent intent = getIntent();
+//
+//        String message = intent.getStringExtra(OpenNoteActivity.EXTRA_MESSAGE);
+//        notes.add(message);
 
 
     }
