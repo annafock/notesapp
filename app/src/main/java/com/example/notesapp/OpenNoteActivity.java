@@ -65,17 +65,6 @@ public class OpenNoteActivity extends AppCompatActivity {
         }
     }
 
-//    //Saves text as string
-//    public void saveText(){
-//
-//        Intent intent = new Intent(this, MainActivity.class);
-//        EditText editText = (EditText) findViewById(R.id.editText);
-//        String inputText = editText.getText().toString();
-//
-//        intent.putExtra(EXTRA_MESSAGE, inputText);
-//        startActivity(intent);
-//    }
-
     public void save(String fileName) {
         try {
             OutputStreamWriter out =
@@ -115,7 +104,5 @@ public class OpenNoteActivity extends AppCompatActivity {
         File file = getBaseContext().getFileStreamPath(fname);
         return file.exists();
     }
-
-
 
 }
