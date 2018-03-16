@@ -28,6 +28,7 @@ public class OpenNoteActivity extends AppCompatActivity {
 
     }
 
+
     @Override
     public void onBackPressed()  {
             saveText();
@@ -46,15 +47,13 @@ public class OpenNoteActivity extends AppCompatActivity {
         }
     }
 
-    //More work on making the text edit be saved to the list
     public void saveText(){
 
         Intent intent = new Intent(this, MainActivity.class);
         EditText editText = (EditText) findViewById(R.id.editText);
-        String message = editText.getText().toString();
+        String inputText = editText.getText().toString();
 
-
-        intent.putExtra(EXTRA_MESSAGE, message);
+        intent.putExtra(EXTRA_MESSAGE, inputText);
         startActivity(intent);
         System.out.println("Sparar!");
     }

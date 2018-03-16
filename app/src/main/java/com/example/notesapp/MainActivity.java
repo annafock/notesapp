@@ -32,26 +32,44 @@ public class MainActivity extends AppCompatActivity {
         mRecyclerView.setLayoutManager(mLayoutManager);
 
         notes = new ArrayList<>();
-        notes.add(new Note("hej", "nice to see you"));
-        // specify an adapter (see also next example)
+        notes.add(makeNoteFromMessage("Once upon a time in a very very cold place"));
+
+        // specify an adapter
         mAdapter = new MyAdapter(notes);
         mRecyclerView.setAdapter(mAdapter);
 
 
-//        // Get the Intent that started this activity and extract the string
-//        Intent intent = getIntent();
-//
-//        String message = intent.getStringExtra(OpenNoteActivity.EXTRA_MESSAGE);
-//        notes.add(message);
+    }
 
+    @Override
+    public void onResume(){
+        super.onResume();
+        // Get the Intent from OpenNoteActivity and extract the string
+        Intent intent = getIntent();
+
+        String message = intent.getStringExtra(OpenNoteActivity.EXTRA_MESSAGE);
+        if (message != null){
+            notes.add(makeNoteFromMessage(message));
+            mAdapter.notifyDataSetChanged();
+        }
 
     }
+
 
     /** Called when the user taps the New Note button */
     public void newNote(View view) {
         Intent intent = new Intent(this, OpenNoteActivity.class);
         startActivity(intent);
 
+    }
+
+    public Note makeNoteFromMessage(String message){
+
+        //Add if statement if string is shorter than 10
+        String title = message.substring(0,10);
+        Note note = new Note(title, message);
+
+        return note;
     }
 
 }
