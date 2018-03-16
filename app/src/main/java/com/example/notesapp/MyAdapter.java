@@ -27,9 +27,6 @@ class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
         }
     }
 
-    //Empty constructor
-    public MyAdapter(){}
-
     // Constructor
     public MyAdapter(List myDataset) {
         mDataset = myDataset;
@@ -57,14 +54,11 @@ class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
     }
 
 
+
     // Return the size of your dataset (invoked by the layout manager)
     @Override
     public int getItemCount() {
         return mDataset.size();
-    }
-
-    public void setItems(List<Note> mDataset) {
-        this.mDataset = mDataset;
     }
 
 }
