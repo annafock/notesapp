@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.text.InputType;
 import android.view.MenuItem;
 import android.widget.EditText;
+import android.widget.Scroller;
 import android.widget.Toast;
 
 import java.io.BufferedReader;
@@ -18,7 +19,8 @@ import java.io.OutputStreamWriter;
 
 
 public class OpenNoteActivity extends AppCompatActivity {
-    public static final int WRITE_NOTE_REQUEST = 1;
+    public static final String EXTRA_MESSAGE = "com.exanmple.notesapp.MESSAGE";
+
 
     EditText editText;
 
@@ -28,10 +30,21 @@ public class OpenNoteActivity extends AppCompatActivity {
         setContentView(R.layout.activity_open_note);
 
         editText = findViewById(R.id.editText);
-        editText.setInputType(InputType.TYPE_CLASS_TEXT);
+        editText.setInputType(InputType.TYPE_TEXT_FLAG_MULTI_LINE);
+        editText.setSingleLine(false);
 
-        //editText.setText(Open("Note1.txt"));
 
+        Intent intent = getIntent();
+
+        if (intent.getExtras()!=null) {
+
+            String fileName = intent.getStringExtra(MainActivity.OPEN_NOTE_MESSAGE);
+            Toast.makeText(this, "opened ", Toast.LENGTH_LONG);
+            String content = open(fileName);
+            editText.setText(content);
+        }
+
+        //Nav arrow to go to parent activity
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
@@ -42,7 +55,7 @@ public class OpenNoteActivity extends AppCompatActivity {
     * */
     @Override
     public void onBackPressed()  {
-        save("Note1.txt");
+
 
         }
 
@@ -53,19 +66,18 @@ public class OpenNoteActivity extends AppCompatActivity {
             case android.R.id.home:
                 NavUtils.navigateUpFromSameTask(this);
 
-                String inputText = editText.getText().toString();
-                if (inputText.length() > 25){
-                    inputText = inputText.substring(0,25);
+                String noteFileName;
+
+                String[] lines = editText.getText().toString().split("/");
+                if (lines[0]!=null) {
+                    noteFileName = lines[0] + ".txt";
+                    save(noteFileName);
+
+                    Intent intent = new Intent();
+                    intent.putExtra(EXTRA_MESSAGE, noteFileName);
+                    setResult(Activity.RESULT_OK, intent);
+                    finish();
                 }
-
-                String noteFileName = inputText + ".txt";
-
-
-                save(noteFileName);
-                Intent intent = new Intent();
-                intent.putExtra("notefilename", noteFileName);
-                setResult(Activity.RESULT_OK, intent);
-                finish();
 
                 return true;
             default:
@@ -73,11 +85,20 @@ public class OpenNoteActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+
+    }
+
     public void save(String fileName) {
+
+
         try {
             OutputStreamWriter out =
                     new OutputStreamWriter(openFileOutput(fileName, 0));
-            out.write(editText.toString());
+            out.write(editText.getText().toString());
             out.flush();
             out.close();
             Toast.makeText(this, "Note Saved!", Toast.LENGTH_SHORT).show();

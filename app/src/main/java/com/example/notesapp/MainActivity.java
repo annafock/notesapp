@@ -1,10 +1,17 @@
 package com.example.notesapp;
 
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
+import android.view.GestureDetector;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Toast;
 
@@ -15,14 +22,14 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.example.notesapp.OpenNoteActivity.WRITE_NOTE_REQUEST;
-
 
 public class MainActivity extends AppCompatActivity {
     private RecyclerView mRecyclerView;
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
     List<Note> notes = new ArrayList<>();
+    public static final String OPEN_NOTE_MESSAGE = "com.exanmple.notesapp.MESSAGE";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,23 +45,81 @@ public class MainActivity extends AppCompatActivity {
         mLayoutManager = new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(mLayoutManager);
 
-        //notes.add(new Note("Once upon a time in a very very cold place", "content"));
-
         // specify an adapter
         mAdapter = new MyAdapter(notes);
         mRecyclerView.setAdapter(mAdapter);
 
+        ItemTouchHelper.SimpleCallback simpleCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
+            @Override
+            public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
+                return false;
+            }
+
+            @Override
+            public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
+                final int position = viewHolder.getAdapterPosition(); //get position which is swipe
+
+                if (direction == ItemTouchHelper.LEFT) {    //if swipe left
+
+                    AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this); //alert for confirm to delete
+                    builder.setMessage("Are you sure to delete?");    //set message
+
+                    builder.setPositiveButton("REMOVE", new DialogInterface.OnClickListener() { //when click on DELETE
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            mAdapter.notifyItemRemoved(position);    //item removed from recylcerview
+                            deleteFile(notes.get(position).getTitle());
+                            prepareNotes();  //then remove item
+
+                            return;
+                        }
+                    }).setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {  //not removing items if cancel is done
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            mAdapter.notifyItemRemoved(position + 1);    //notifies the RecyclerView Adapter that data in adapter has been removed at a particular position.
+                            mAdapter.notifyItemRangeChanged(position, mAdapter.getItemCount());   //notifies the RecyclerView Adapter that positions of element in adapter has been changed from position(removed element index to end of list), please update it.
+                            return;
+                        }
+                    }).show();  //show alert dialog
+                }
+            }
+        };
+
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(simpleCallback);
+        itemTouchHelper.attachToRecyclerView(mRecyclerView);
+
         prepareNotes();
 
-        mAdapter.notifyDataSetChanged();
+        mRecyclerView.addOnItemTouchListener(new RecyclerTouchListener(this, mRecyclerView, new ClickListener() {
+            @Override
+            public void onClick(View view, int position) {
+                //Values are passing to activity & to fragment as well
+                Toast.makeText(MainActivity.this, "Single Click on position :" +position,
+                        Toast.LENGTH_SHORT).show();
+
+                String fileName = notes.get(position).getTitle();
+
+                Context context = view.getContext();
+
+                Intent intentOpenFile = new Intent(context, OpenNoteActivity.class);
+                intentOpenFile.putExtra(OPEN_NOTE_MESSAGE, fileName);
+                setResult(Activity.RESULT_OK, intentOpenFile);
+                context.startActivity(intentOpenFile);
+
+            }
+
+            @Override
+            public void onLongClick(View view, int position) {
+                Toast.makeText(MainActivity.this, "Long press on position :"+position,
+                        Toast.LENGTH_LONG).show();
+            }
+        }));
 
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-
-                prepareNotes();
-
+        prepareNotes();
     }
 
 
@@ -71,7 +136,7 @@ public class MainActivity extends AppCompatActivity {
         File[] files = directory.listFiles();
         for (int f = 0; f < files.length; f++) {
 
-            notes.add(new Note(files[f].getName(),open(files[f].getName())));
+            notes.add(0, new Note(files[f].getName(),open(files[f].getName())));
         }
 
     }
@@ -96,6 +161,63 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return content;
+    }
+
+    public boolean deleteFile(String fileName){
+        File dir = getFilesDir();
+        File file = new File(dir, fileName);
+        boolean deleted = file.delete();
+        return deleted;
+    }
+
+    public static interface ClickListener{
+        public void onClick(View view,int position);
+        public void onLongClick(View view,int position);
+    }
+
+    class RecyclerTouchListener implements RecyclerView.OnItemTouchListener{
+
+        private ClickListener clicklistener;
+        private GestureDetector gestureDetector;
+
+        public RecyclerTouchListener(Context context, final RecyclerView recycleView, final ClickListener clicklistener){
+
+            this.clicklistener=clicklistener;
+            gestureDetector=new GestureDetector(context,new GestureDetector.SimpleOnGestureListener(){
+                @Override
+                public boolean onSingleTapUp(MotionEvent e) {
+                    return true;
+                }
+
+                @Override
+                public void onLongPress(MotionEvent e) {
+                    View child=recycleView.findChildViewUnder(e.getX(),e.getY());
+                    if(child!=null && clicklistener!=null){
+                        clicklistener.onLongClick(child,recycleView.getChildAdapterPosition(child));
+                    }
+                }
+            });
+        }
+
+        @Override
+        public boolean onInterceptTouchEvent(RecyclerView rv, MotionEvent e) {
+            View child=rv.findChildViewUnder(e.getX(),e.getY());
+            if(child!=null && clicklistener!=null && gestureDetector.onTouchEvent(e)){
+                clicklistener.onClick(child,rv.getChildAdapterPosition(child));
+            }
+
+            return false;
+        }
+
+        @Override
+        public void onTouchEvent(RecyclerView rv, MotionEvent e) {
+
+        }
+
+        @Override
+        public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept) {
+
+        }
     }
 
 
