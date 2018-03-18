@@ -53,9 +53,17 @@ public class OpenNoteActivity extends AppCompatActivity {
             case android.R.id.home:
                 NavUtils.navigateUpFromSameTask(this);
 
-                save("Note2.txt");
+                String inputText = editText.getText().toString();
+                if (inputText.length() > 25){
+                    inputText = inputText.substring(0,25);
+                }
+
+                String noteFileName = inputText + ".txt";
+
+
+                save(noteFileName);
                 Intent intent = new Intent();
-                intent.putExtra("notefilename", "Note2.txt");
+                intent.putExtra("notefilename", noteFileName);
                 setResult(Activity.RESULT_OK, intent);
                 finish();
 
@@ -78,7 +86,7 @@ public class OpenNoteActivity extends AppCompatActivity {
         }
     }
 
-    public String Open(String fileName) {
+    public String open(String fileName) {
         String content = "";
         if (FileExists(fileName)) {
             try {
