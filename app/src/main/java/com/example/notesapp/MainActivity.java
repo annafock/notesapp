@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -17,6 +18,7 @@ import android.widget.Toast;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
@@ -121,6 +123,11 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        prepareNotes();
+    }
+
 
     /** Called when the user taps the New Note button */
     public void newNote(View view) {
@@ -135,15 +142,18 @@ public class MainActivity extends AppCompatActivity {
         File[] files = directory.listFiles();
         for (int f = 0; f < files.length; f++) {
 
-            notes.add(0, new Note(files[f].getName(), openFile(files[f].getName())));
+            notes.add( new Note(files[f].getName(), openFile(files[f].getName())));
         }
 
     }
 
     public String openFile(String fileName) {
         String content = "";
+        FileInputStream in;
         try {
-            InputStream in = openFileInput(fileName);
+            File file = new File(Environment.getExternalStoragePublicDirectory(
+                    Environment.DIRECTORY_DOCUMENTS), fileName);
+            in = new FileInputStream(file);
             if ( in != null) {
                 InputStreamReader tmp = new InputStreamReader( in );
                 BufferedReader reader = new BufferedReader(tmp);

@@ -2,6 +2,7 @@ package com.example.notesapp;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.os.Environment;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -12,6 +13,7 @@ import android.widget.Toast;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
@@ -53,7 +55,7 @@ public class OpenNoteActivity extends AppCompatActivity {
     public void onBackPressed()  {
         saveNewOrReopenedFile();
 
-        }
+    }
 
     /** Called when the user taps the nav bar back button */
     @Override
@@ -72,31 +74,44 @@ public class OpenNoteActivity extends AppCompatActivity {
     }
 
     public void saveNewOrReopenedFile(){
-        String[] lines = editText.getText().toString().split("\n");
+        //Get the first line of the text
+        String[] lines = editText.getText().toString().split(System.getProperty("line.separator"));
 
+
+        //Is it a new file or a reopened file?
+        //New file: create file name and save file
         if(!reOpenFile){
-            if (lines[0]!=null) {
-                fileName = lines[0];
-                saveToFile(fileName);
+            if (lines[0]!=null){
+                if(lines[0].length()>25) {
+                    fileName = lines[0].substring(0,25); //Save first rows first 25 chars
 
-                Intent intent = new Intent();
-                intent.putExtra(EXTRA_MESSAGE, fileName);
-                setResult(Activity.RESULT_OK, intent);
-                finish();
-            }
-        }
-        else{
+                }else{
+                    fileName = lines[0];
+                }
+                saveToFile(fileName);
+                //TODO find first line and save it to file name
+            }}
+        //If the file is old and has been changed, save new content to the file
+        else if(!editText.getText().toString().equals(openFile(fileName))){
+            //TODO if first line has changed, change file name
             saveToFile(fileName);
         }
+
+        Intent intent = new Intent();
+        intent.putExtra(EXTRA_MESSAGE, fileName);
+        setResult(Activity.RESULT_OK, intent);
+        finish();
+
     }
 
-
     public void saveToFile(String fileName) {
+        FileOutputStream out;
 
         try {
-            OutputStreamWriter out =
-                    new OutputStreamWriter(openFileOutput(fileName, 0));
-            out.write(editText.getText().toString());
+            File file = new File(Environment.getExternalStoragePublicDirectory(
+                    Environment.DIRECTORY_DOCUMENTS), "filenametest.txt");
+            out = new FileOutputStream(file);
+            out.write(editText.getText().toString().getBytes());
             out.flush();
             out.close();
             Toast.makeText(this, "Note Saved!", Toast.LENGTH_SHORT).show();
