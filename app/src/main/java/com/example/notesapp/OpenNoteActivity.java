@@ -13,6 +13,7 @@ import android.widget.Toast;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -127,29 +128,29 @@ public class OpenNoteActivity extends AppCompatActivity {
 
     public String openFile(String fileName) {
         String content = "";
-        if (fileExists(fileName)) {
-            try {
-                InputStream in = openFileInput(fileName);
-                if ( in != null) {
-                    InputStreamReader tmp = new InputStreamReader( in );
-                    BufferedReader reader = new BufferedReader(tmp);
-                    String str;
-                    StringBuilder buf = new StringBuilder();
-                    while ((str = reader.readLine()) != null) {
-                        buf.append(str + "\n");
-                    } in .close();
-                    content = buf.toString();
-                }
-            } catch (java.io.FileNotFoundException e) {} catch (Throwable t) {
-                Toast.makeText(this, "Exception: " + t.toString(), Toast.LENGTH_LONG).show();
-            }
-        }
-        return content;
-    }
+        FileInputStream in;
+        try {
+            File parentFile = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS);
 
-    public boolean fileExists(String fname) {
-        File file = getBaseContext().getFileStreamPath(fname);
-        return file.exists();
+            File file = new File(parentFile, fileName);
+
+            in = new FileInputStream(file);
+            if ( in != null) {
+                InputStreamReader tmp = new InputStreamReader( in );
+                BufferedReader reader = new BufferedReader(tmp);
+                String str;
+                StringBuilder buf = new StringBuilder();
+                while ((str = reader.readLine()) != null) {
+                    buf.append(str + "\n");
+                } in .close();
+
+                content = buf.toString();
+            }
+        } catch (java.io.FileNotFoundException e) {} catch (Throwable t) {
+            Toast.makeText(this, "Exception: " + t.toString(), Toast.LENGTH_LONG).show();
+        }
+
+        return content;
     }
 
 }

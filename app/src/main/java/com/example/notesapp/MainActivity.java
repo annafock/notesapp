@@ -138,7 +138,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void prepareNotes() {
         File directory;
-        directory = getFilesDir();
+        directory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS);
         File[] files = directory.listFiles();
         for (int f = 0; f < files.length; f++) {
 
@@ -151,8 +151,10 @@ public class MainActivity extends AppCompatActivity {
         String content = "";
         FileInputStream in;
         try {
-            File file = new File(Environment.getExternalStoragePublicDirectory(
-                    Environment.DIRECTORY_DOCUMENTS), fileName);
+            File parentFile = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS);
+
+            File file = new File(parentFile, fileName);
+
             in = new FileInputStream(file);
             if ( in != null) {
                 InputStreamReader tmp = new InputStreamReader( in );
@@ -173,7 +175,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public boolean deleteFile(String fileName){
-        File dir = getFilesDir();
+        File dir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS);
         File file = new File(dir, fileName);
         boolean deleted = file.delete();
         return deleted;
