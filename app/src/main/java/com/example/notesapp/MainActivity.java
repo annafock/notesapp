@@ -49,6 +49,7 @@ public class MainActivity extends AppCompatActivity {
         mAdapter = new MyAdapter(notes);
         mRecyclerView.setAdapter(mAdapter);
 
+        /** Handles swipe to delete note from recycler view */
         ItemTouchHelper.SimpleCallback simpleCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
             @Override
             public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
@@ -92,6 +93,8 @@ public class MainActivity extends AppCompatActivity {
 
         prepareNotes();
 
+
+        /** Called when the user taps a line in recycler view */
         mRecyclerView.addOnItemTouchListener(new RecyclerTouchListener(this, mRecyclerView, new ClickListener() {
             @Override
             public void onClick(View view, int position) {
@@ -112,8 +115,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onLongClick(View view, int position) {
-                Toast.makeText(MainActivity.this, "Long press on position :"+position,
-                        Toast.LENGTH_LONG).show();
+
             }
         }));
 

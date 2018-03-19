@@ -49,17 +49,14 @@ public class OpenNoteActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
-    /*
-    *
-    * Handles the two different back arrows in this activity
-    *
-    * */
+    /** Called when the user taps the system back button */
     @Override
     public void onBackPressed()  {
         saveNewOrReopenedFile();
 
         }
 
+    /** Called when the user taps the nav bar back button */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -80,7 +77,7 @@ public class OpenNoteActivity extends AppCompatActivity {
 
         if(!reOpenFile){
             if (lines[0]!=null) {
-                fileName = lines[0] + ".txt";
+                fileName = lines[0];
                 save(fileName);
 
                 Intent intent = new Intent();
