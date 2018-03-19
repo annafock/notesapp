@@ -67,9 +67,11 @@ public class MainActivity extends AppCompatActivity {
                     builder.setPositiveButton("REMOVE", new DialogInterface.OnClickListener() { //when click on DELETE
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
+
+                            deleteFile(notes.get(position).getTitle());//remove file from directory
+                            notes.remove(position); //remove position from note list
                             mAdapter.notifyItemRemoved(position);    //item removed from recylcerview
-                            deleteFile(notes.get(position).getTitle());
-                            prepareNotes();  //then remove item
+
 
                             return;
                         }
