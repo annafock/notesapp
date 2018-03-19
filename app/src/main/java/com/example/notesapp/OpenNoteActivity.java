@@ -2,10 +2,10 @@ package com.example.notesapp;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.os.Bundle;
 import android.os.Environment;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.text.InputType;
 import android.view.MenuItem;
 import android.widget.EditText;
@@ -16,7 +16,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
 
 
 public class OpenNoteActivity extends AppCompatActivity {
@@ -108,8 +107,14 @@ public class OpenNoteActivity extends AppCompatActivity {
         FileOutputStream out;
 
         try {
-            File file = new File(Environment.getExternalStoragePublicDirectory(
-                    Environment.DIRECTORY_DOCUMENTS), "filenametest.txt");
+            File parentFile = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS);
+
+            if(!parentFile.exists()){
+                parentFile.mkdirs();
+            }
+
+            File file = new File(parentFile, fileName);
+
             out = new FileOutputStream(file);
             out.write(editText.getText().toString().getBytes());
             out.flush();
