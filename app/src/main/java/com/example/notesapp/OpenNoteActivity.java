@@ -20,9 +20,9 @@ import java.io.OutputStreamWriter;
 
 public class OpenNoteActivity extends AppCompatActivity {
     public static final String EXTRA_MESSAGE = "com.exanmple.notesapp.MESSAGE";
-
-
     EditText editText;
+    String fileName;
+    Boolean reOpenFile = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,8 +37,9 @@ public class OpenNoteActivity extends AppCompatActivity {
         Intent intent = getIntent();
 
         if (intent.getExtras()!=null) {
+            reOpenFile = true;
 
-            String fileName = intent.getStringExtra(MainActivity.OPEN_NOTE_MESSAGE);
+            fileName = intent.getStringExtra(MainActivity.OPEN_NOTE_MESSAGE);
             Toast.makeText(this, "opened ", Toast.LENGTH_LONG);
             String content = open(fileName);
             editText.setText(content);
@@ -55,7 +56,7 @@ public class OpenNoteActivity extends AppCompatActivity {
     * */
     @Override
     public void onBackPressed()  {
-
+        saveNewOrReopenedFile();
 
         }
 
@@ -65,19 +66,8 @@ public class OpenNoteActivity extends AppCompatActivity {
 
             case android.R.id.home:
                 NavUtils.navigateUpFromSameTask(this);
+                saveNewOrReopenedFile();
 
-                String noteFileName;
-
-                String[] lines = editText.getText().toString().split("/");
-                if (lines[0]!=null) {
-                    noteFileName = lines[0] + ".txt";
-                    save(noteFileName);
-
-                    Intent intent = new Intent();
-                    intent.putExtra(EXTRA_MESSAGE, noteFileName);
-                    setResult(Activity.RESULT_OK, intent);
-                    finish();
-                }
 
                 return true;
             default:
@@ -85,12 +75,25 @@ public class OpenNoteActivity extends AppCompatActivity {
         }
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
+    public void saveNewOrReopenedFile(){
+        String[] lines = editText.getText().toString().split("\n");
 
+        if(!reOpenFile){
+            if (lines[0]!=null) {
+                fileName = lines[0] + ".txt";
+                save(fileName);
 
+                Intent intent = new Intent();
+                intent.putExtra(EXTRA_MESSAGE, fileName);
+                setResult(Activity.RESULT_OK, intent);
+                finish();
+            }
+        }
+        else{
+            save(fileName);
+        }
     }
+
 
     public void save(String fileName) {
 
