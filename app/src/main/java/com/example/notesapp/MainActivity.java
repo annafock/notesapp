@@ -121,11 +121,6 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        prepareNotes();
-    }
-
 
     /** Called when the user taps the New Note button */
     public void newNote(View view) {
@@ -140,12 +135,12 @@ public class MainActivity extends AppCompatActivity {
         File[] files = directory.listFiles();
         for (int f = 0; f < files.length; f++) {
 
-            notes.add(0, new Note(files[f].getName(),open(files[f].getName())));
+            notes.add(0, new Note(files[f].getName(), openFile(files[f].getName())));
         }
 
     }
 
-    public String open(String fileName) {
+    public String openFile(String fileName) {
         String content = "";
         try {
             InputStream in = openFileInput(fileName);

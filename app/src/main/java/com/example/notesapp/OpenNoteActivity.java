@@ -8,7 +8,6 @@ import android.os.Bundle;
 import android.text.InputType;
 import android.view.MenuItem;
 import android.widget.EditText;
-import android.widget.Scroller;
 import android.widget.Toast;
 
 import java.io.BufferedReader;
@@ -41,7 +40,7 @@ public class OpenNoteActivity extends AppCompatActivity {
 
             fileName = intent.getStringExtra(MainActivity.OPEN_NOTE_MESSAGE);
             Toast.makeText(this, "opened ", Toast.LENGTH_LONG);
-            String content = open(fileName);
+            String content = openFile(fileName);
             editText.setText(content);
         }
 
@@ -78,7 +77,7 @@ public class OpenNoteActivity extends AppCompatActivity {
         if(!reOpenFile){
             if (lines[0]!=null) {
                 fileName = lines[0];
-                save(fileName);
+                saveToFile(fileName);
 
                 Intent intent = new Intent();
                 intent.putExtra(EXTRA_MESSAGE, fileName);
@@ -87,13 +86,12 @@ public class OpenNoteActivity extends AppCompatActivity {
             }
         }
         else{
-            save(fileName);
+            saveToFile(fileName);
         }
     }
 
 
-    public void save(String fileName) {
-
+    public void saveToFile(String fileName) {
 
         try {
             OutputStreamWriter out =
@@ -107,9 +105,9 @@ public class OpenNoteActivity extends AppCompatActivity {
         }
     }
 
-    public String open(String fileName) {
+    public String openFile(String fileName) {
         String content = "";
-        if (FileExists(fileName)) {
+        if (fileExists(fileName)) {
             try {
                 InputStream in = openFileInput(fileName);
                 if ( in != null) {
@@ -129,7 +127,7 @@ public class OpenNoteActivity extends AppCompatActivity {
         return content;
     }
 
-    public boolean FileExists(String fname) {
+    public boolean fileExists(String fname) {
         File file = getBaseContext().getFileStreamPath(fname);
         return file.exists();
     }
